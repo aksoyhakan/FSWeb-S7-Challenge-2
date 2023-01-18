@@ -1,12 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import {
-  Switch,
-  Route,
-  Link,
-  useRouteMatch,
-  useParams,
-} from "react-router-dom";
+import { Link, useRouteMatch } from "react-router-dom";
 
 const SCNavDiv = styled.div`
   width: 100%;
@@ -79,7 +73,7 @@ const SCLink = styled.div`
 
 const Navigation = (props) => {
   const { url } = useRouteMatch();
-  console.log("url:", url);
+
   return (
     <SCNavDiv>
       <SCNameDiv>Where is my food???</SCNameDiv>

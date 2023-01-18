@@ -1,4 +1,28 @@
 import firstData from "../../../src/firstData";
+import price from "../../../src/Component/price";
+import { pizzaSauce, pizzaIngredients } from "../../../src/Component/FormDiv2";
+import { pizzaSize } from "../../../src/Component/FormDiv1";
+
+const testSupplier = firstData[2].name;
+const testName = "Hakan AKSOY";
+const testSize = pizzaSize[3];
+const testSauce = pizzaSauce[4];
+const testIngredient = [
+  pizzaIngredients[0],
+  pizzaIngredients[1],
+  pizzaIngredients[2],
+  pizzaIngredients[3],
+];
+const testGluten = "gluten";
+const testNote = "Zil çalışmıyor";
+const testQuantity = 3;
+
+const testPrice =
+  (price[testSize] +
+    price[testSauce] +
+    price.ingredients * testIngredient.length) *
+  price[testGluten] *
+  testQuantity;
 
 describe("Form Validation Test", () => {
   beforeEach(() => cy.visit("http://localhost:3000/"));
@@ -24,6 +48,13 @@ describe("Form Validation Test", () => {
       .contains("Haber");
   });
 
+  it("Order Click Working (supplier click)", () => {
+    cy.get(`[data-cy="${testSupplier}"]`)
+      .click()
+      .get('[data-cy="order-fix-exp"]')
+      .contains("Build your own pizza");
+  });
+
   it("Submit Button Disabled as Default", () => {
     cy.get('[data-cy="order-link"]')
       .click()
@@ -37,6 +68,50 @@ describe("Form Validation Test", () => {
       .should("be.disabled");
   });
 
+  it("Next and Previous Button Working Properly", () => {
+    cy.get('[data-cy="order-link"]')
+      .click()
+      .get('[data-cy="previous-page"]')
+      .click()
+      .get('[data-cy="previous-page"]')
+      .click()
+      .url()
+      .should("eq", "http://localhost:3000/order")
+      .get('[data-cy="next-page"]')
+      .click()
+      .url()
+      .should("eq", "http://localhost:3000/order/1")
+      .get('[data-cy="previous-page"]')
+      .click()
+      .url()
+      .should("eq", "http://localhost:3000/order/1")
+      .get('[data-cy="next-page"]')
+      .click()
+      .url()
+      .should("eq", "http://localhost:3000/order/2")
+      .get('[data-cy="previous-page"]')
+      .click()
+      .url()
+      .should("eq", "http://localhost:3000/order/1")
+      .get('[data-cy="previous-page"]')
+      .url()
+      .get('[data-cy="previous-page"]')
+      .url()
+      .should("eq", "http://localhost:3000/order/1")
+      .get('[data-cy="next-page"]')
+      .click()
+      .get('[data-cy="next-page"]')
+      .click()
+      .url()
+      .should("eq", "http://localhost:3000/order/3")
+      .get('[data-cy="next-page"]')
+      .click()
+      .get('[data-cy="next-page"]')
+      .click()
+      .url()
+      .should("eq", "http://localhost:3000/order/3");
+  });
+
   it("Order Form Name Input Test", () => {
     cy.get('[data-cy="order-link"]')
       .click()
@@ -44,8 +119,8 @@ describe("Form Validation Test", () => {
       .click()
       .get('[data-cy="name-input"]')
       .click()
-      .type("Hakan AKSOY")
-      .should("have.value", "Hakan AKSOY");
+      .type(testName)
+      .should("have.value", testName);
   });
 
   it("Order Form Size Droplist Test", () => {
@@ -54,8 +129,8 @@ describe("Form Validation Test", () => {
       .get('[data-cy="next-page"]')
       .click()
       .get('[data-cy="select-input"]')
-      .select("Large")
-      .should("have.value", "Large");
+      .select(testSize)
+      .should("have.value", testSize);
   });
 
   it("Order Form Radio Button Test", () => {
@@ -65,7 +140,7 @@ describe("Form Validation Test", () => {
       .click()
       .get('[data-cy="next-page"]')
       .click()
-      .get('[data-cy="alfredo"]')
+      .get(`[data-cy=${testSauce}]`)
       .check()
       .should("be.checked");
   });
@@ -77,21 +152,21 @@ describe("Form Validation Test", () => {
       .click()
       .get('[data-cy="next-page"]')
       .click()
-      .get('[data-cy="pepperoni"]')
+      .get(`[data-cy=${testIngredient[0]}]`)
       .check()
       .should("be.checked")
-      .get('[data-cy="bacon"]')
+      .get(`[data-cy=${testIngredient[1]}]`)
       .check()
       .should("be.checked")
-      .get('[data-cy="ham"]')
+      .get(`[data-cy=${testIngredient[2]}]`)
       .check()
       .should("be.checked")
-      .get('[data-cy="meatballs"]')
+      .get(`[data-cy=${testIngredient[3]}]`)
       .check()
       .should("be.checked")
       .get('[data-cy="next-page"]')
       .click()
-      .get('[data-cy="gluten"]')
+      .get(`[data-cy=${testGluten}]`)
       .check()
       .should("be.checked");
   });
@@ -107,8 +182,8 @@ describe("Form Validation Test", () => {
       .click()
       .get('[data-cy="note-input"]')
       .click()
-      .type("Zil çalışmıyor")
-      .should("have.value", "Zil çalışmıyor");
+      .type(testNote)
+      .should("have.value", testNote);
   });
 
   it("Order Form Quantity Test", () => {
@@ -123,11 +198,11 @@ describe("Form Validation Test", () => {
       .get('[data-cy="quantity-input"]')
       .click()
       .clear()
-      .type("3")
-      .should("have.value", "3");
+      .type(testQuantity)
+      .should("have.value", testQuantity);
   });
 
-  it("Error Message Working Properly Test", () => {
+  it("Error Message Working Properly Test and Check Previous Button Disabled During Error Message Occuring ", () => {
     cy.get('[data-cy="order-link"]')
       .click()
       .get('[data-cy="next-page"]')
@@ -138,15 +213,29 @@ describe("Form Validation Test", () => {
       .get('[data-cy="error"]')
       .should("have.css", "display", "block")
       .get('[data-cy="next-page"]')
+      .should("be.disabled")
+      .get('[data-cy="name-input"]')
       .click()
-      .get('[data-cy="pepperoni"]')
+      .clear()
+      .type(testName)
+      .get('[data-cy="select-input"]')
+      .select(testSize)
+      .get('[data-cy="next-page"]')
+      .click()
+      .get(`[data-cy=${testIngredient[0]}]`)
       .check()
-      .get('[data-cy="bacon"]')
+      .get(`[data-cy=${testIngredient[1]}]`)
       .check()
-      .get('[data-cy="ham"]')
+      .get(`[data-cy=${testIngredient[2]}]`)
       .check()
       .get('[data-cy="error"]')
-      .should("have.css", "display", "block");
+      .should("have.css", "display", "block")
+      .get('[data-cy="next-page"]')
+      .should("be.disabled")
+      .get(`[data-cy=${testIngredient[3]}]`)
+      .check()
+      .get('[data-cy="next-page"]')
+      .click();
   });
 
   it("Price Calculation Test", () => {
@@ -155,29 +244,29 @@ describe("Form Validation Test", () => {
       .get('[data-cy="next-page"]')
       .click()
       .get('[data-cy="select-input"]')
-      .select("Large")
+      .select(testSize)
       .get('[data-cy="next-page"]')
       .click()
-      .get('[data-cy="alfredo"]')
+      .get(`[data-cy=${testSauce}]`)
       .check()
-      .get('[data-cy="pepperoni"]')
+      .get(`[data-cy=${testIngredient[0]}]`)
       .check()
-      .get('[data-cy="bacon"]')
+      .get(`[data-cy=${testIngredient[1]}]`)
       .check()
-      .get('[data-cy="ham"]')
+      .get(`[data-cy=${testIngredient[2]}]`)
       .check()
-      .get('[data-cy="meatballs"]')
+      .get(`[data-cy=${testIngredient[3]}]`)
       .check()
       .get('[data-cy="next-page"]')
       .click()
-      .get('[data-cy="gluten"]')
+      .get(`[data-cy=${testGluten}]`)
       .check()
       .get('[data-cy="quantity-input"]')
       .click()
       .clear()
-      .type("2")
+      .type(testQuantity)
       .get('[data-cy="submit"]')
-      .contains("$ 270");
+      .contains(`$ ${testPrice}`);
   });
 
   it("Submit Button Working Properly(not submit and submit)", () => {
@@ -188,10 +277,7 @@ describe("Form Validation Test", () => {
       .get('[data-cy="name-input"]')
       .click()
       .type("h")
-      .get('[data-cy="next-page"]')
-      .click()
-      .get('[data-cy="next-page"]')
-      .click()
+      .visit("http://localhost:3000/order/3")
       .get('[data-cy="submit"]')
       .should("be.disabled")
       .get('[data-cy="previous-page"]')
@@ -201,11 +287,8 @@ describe("Form Validation Test", () => {
       .get('[data-cy="name-input"]')
       .click()
       .clear()
-      .type("Hakan AKSOY")
-      .get('[data-cy="next-page"]')
-      .click()
-      .get('[data-cy="next-page"]')
-      .click()
+      .type(testName)
+      .visit("http://localhost:3000/order/3")
       .get('[data-cy="submit"]')
       .should("be.disabled")
       .get('[data-cy="previous-page"]')
@@ -213,41 +296,52 @@ describe("Form Validation Test", () => {
       .get('[data-cy="previous-page"]')
       .click()
       .get('[data-cy="select-input"]')
-      .select("Large")
-      .should("have.value", "Large")
-      .get('[data-cy="next-page"]')
-      .click()
-      .get('[data-cy="next-page"]')
-      .click()
+      .select(testSize)
+      .should("have.value", testSize)
+      .visit("http://localhost:3000/order/3")
       .get('[data-cy="submit"]')
       .should("be.disabled")
       .get('[data-cy="previous-page"]')
       .click()
-      .get('[data-cy="alfredo"]')
+      .get(`[data-cy=${testSauce}]`)
       .check()
-      .get('[data-cy="next-page"]')
-      .click()
+      .visit("http://localhost:3000/order/3")
       .get('[data-cy="submit"]')
       .should("be.disabled")
       .get('[data-cy="previous-page"]')
       .click()
-      .get('[data-cy="pepperoni"]')
+      .get(`[data-cy=${testIngredient[0]}]`)
       .check()
-      .get('[data-cy="bacon"]')
+      .get(`[data-cy=${testIngredient[1]}]`)
       .check()
-      .get('[data-cy="ham"]')
+      .get(`[data-cy=${testIngredient[2]}]`)
       .check()
-      .get('[data-cy="next-page"]')
-      .click()
+      .visit("http://localhost:3000/order/3")
       .get('[data-cy="submit"]')
       .should("be.disabled")
       .get('[data-cy="previous-page"]')
       .click()
-      .get('[data-cy="meatballs"]')
+      .get('[data-cy="previous-page"]')
+      .click()
+      .get('[data-cy="name-input"]')
+      .click()
+      .clear()
+      .type(testName)
+      .get('[data-cy="select-input"]')
+      .select(testSize)
+      .get('[data-cy="next-page"]')
+      .click()
+      .get(`[data-cy=${testIngredient[0]}]`)
+      .check()
+      .get(`[data-cy=${testIngredient[1]}]`)
+      .check()
+      .get(`[data-cy=${testIngredient[2]}]`)
+      .check()
+      .get(`[data-cy=${testIngredient[3]}]`)
       .check()
       .get('[data-cy="next-page"]')
       .click()
-      .get('[data-cy="gluten"]')
+      .get(`[data-cy=${testGluten}]`)
       .check()
       .get('[data-cy="quantity-input"]')
       .click()
@@ -258,11 +352,17 @@ describe("Form Validation Test", () => {
       .get('[data-cy="quantity-input"]')
       .click()
       .clear()
-      .type("1")
+      .type(testQuantity)
+      .get('[data-cy="note-input"]')
+      .click()
+      .type(testNote)
       .get('[data-cy="submit"]')
       .should("not.be.disabled")
       .click()
       .get('[data-cy="register"]')
-      .should("have.css", "display", "block");
+      .should("have.css", "display", "block")
+      .wait(4500)
+      .url()
+      .should("eq", "http://localhost:3000/");
   });
 });

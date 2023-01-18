@@ -12,7 +12,6 @@ import {
   useLocation,
 } from "react-router-dom";
 import FormDiv from "./FormDiv";
-import Error from "./Error";
 
 const SCOrderDiv = styled.div`
 max-width:800px;
@@ -42,7 +41,7 @@ const SCHistory = styled.div`
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
-  margin: 1rem 2rem;
+  margin: 0rem 2rem 1rem 2rem;
 
   @media (max-width: 450px) {
     flex-direction: column;
@@ -68,8 +67,8 @@ const SCHistoryButton = styled.button`
 
 const dummyOrder = {
   name: "",
-  size: "Select",
-  sauce: "",
+  size: "Small",
+  sauce: "pesto",
   ingredients: [],
   gluten: false,
   note: "",
@@ -84,6 +83,18 @@ const dummyError = {
   gluten: "",
   note: "",
   quantity: "",
+  network: "",
+};
+
+const dummyErrorBoolean = {
+  name: false,
+  size: false,
+  sauce: false,
+  ingredients: false,
+  gluten: false,
+  note: false,
+  quantity: false,
+  network: false,
 };
 
 const dummyRegister = {
@@ -108,8 +119,9 @@ const Order = (props) => {
   const [registerOrder, setRegisterOrder] = useState(dummyRegister);
   const [orderPrice, setOrderPrice] = useState(0);
   const [orderBoolean, setOrderBoolean] = useState(true);
-  const [errorsBoolean, setErrorsBoolean] = useState(false);
+  const [errorsBoolean, setErrorsBoolean] = useState(dummyErrorBoolean);
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [nextPageDisabled, setNextPageDisabled] = useState(false);
 
   const { path } = useRouteMatch();
   const history = useHistory();
@@ -120,7 +132,13 @@ const Order = (props) => {
       .string()
       .min(charNum, "At least, there must be 2 characs.")
       .matches(" ", "Please, enter your name and surname."),
-    size: yup.string().required("Please, select your pizza size."),
+    size: yup
+      .string()
+      .oneOf(
+        ["Small", "Medium", "Large", "Extra-Large", "King-Size"],
+        "Please, select your pizza size."
+      )
+      .required("Please, select your pizza size."),
     sauce: yup.string().required("Please, select your sauce"),
     ingredients: yup
       .array()
@@ -145,9 +163,18 @@ const Order = (props) => {
           setOrderBoolean(true);
           setRegisterOrder(dummyRegister);
           setOrder(dummyOrder);
+          setNextPageDisabled(false);
+          history.push("/");
         }, 4000);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setErrors({ ...errors, ["network"]: err });
+        setErrorsBoolean({ ...errorsBoolean, ["network"]: true });
+        setTimeout(() => {
+          setErrors({ ...errors, ["network"]: "" });
+          setErrorsBoolean({ ...errorsBoolean, ["network"]: false });
+        }, 4000);
+      });
   }
 
   useEffect(() => {
@@ -157,7 +184,6 @@ const Order = (props) => {
         price.ingredients * order.ingredients.length) *
       order.quantity;
     if (order.gluten) newPrice = newPrice * price.gluten;
-    console.log(newPrice);
     setOrderPrice(newPrice);
   }, [order]);
 
@@ -168,6 +194,18 @@ const Order = (props) => {
       .catch((err) => console.log(err));
   }, [order]);
 
+  useEffect(() => {
+    setNextPageDisabled(
+      !(
+        errors.name === "" &&
+        errors.size === "" &&
+        errors.sauce === "" &&
+        errors.ingredients === "" &&
+        errors.quantity === ""
+      )
+    );
+  }, [errors]);
+
   function orderValidation(name, value) {
     yup
       .reach(formSchema, name)
@@ -175,17 +213,16 @@ const Order = (props) => {
       .then(() => {
         setErrors({ ...errors, [name]: "" });
         console.log("Yup okey");
-        setErrorsBoolean(false);
+        setErrorsBoolean({ ...errorsBoolean, [name]: false });
       })
       .catch((err) => {
         setErrors({ ...errors, [name]: err.errors[0] });
         console.log("Yup hatalı", errors);
-        setErrorsBoolean(true);
+        setErrorsBoolean({ ...errorsBoolean, [name]: true });
       });
   }
 
   function handleChange(event) {
-    console.log("buradayım0");
     let newValue = event.target.value;
     let newArray = [...order.ingredients];
     if (event.target.name === "ingredients") {
@@ -198,7 +235,6 @@ const Order = (props) => {
       orderValidation(event.target.name, !order.gluten);
       setOrder({ ...order, [event.target.name]: !order.gluten });
     } else {
-      console.log(newValue + " " + price[newValue]);
       orderValidation(event.target.name, newValue);
       setOrder({ ...order, [event.target.name]: newValue });
     }
@@ -227,16 +263,13 @@ const Order = (props) => {
     if (event.target.textContent === "Next Page") {
       if (locationArray.length === 2) {
         newLocation = location.pathname + "/1";
-        console.log(locationArray);
         history.push(newLocation);
       } else if (locationArray[locationArray.length - 1] !== "3") {
-        console.log(locationArray);
         locationArray[locationArray.length - 1] =
           parseInt(locationArray[locationArray.length - 1]) + 1;
         newLocation = locationArray.join("/");
         history.push(newLocation);
       } else {
-        console.log(locationArray);
         newLocation = locationArray.join("/");
         history.push(newLocation);
       }
@@ -253,13 +286,13 @@ const Order = (props) => {
           <Route path={`${path}/:id`}>
             <FormDiv
               order={order}
-              setOrder={setOrder}
               orderPrice={orderPrice}
-              setOrderPrice={setOrderPrice}
               handleChange={handleChange}
               handleSubmit={handleSubmit}
               submitDisabled={submitDisabled}
-              setSubmitDisabled={setSubmitDisabled}
+              errors={errors}
+              errorsBoolean={errorsBoolean}
+              path={path}
             ></FormDiv>
           </Route>
         </Switch>
@@ -267,12 +300,15 @@ const Order = (props) => {
           <SCHistoryButton data-cy="previous-page" onClick={handleHistory}>
             Previous Page
           </SCHistoryButton>
-          <SCHistoryButton data-cy="next-page" onClick={handleHistory}>
+          <SCHistoryButton
+            data-cy="next-page"
+            onClick={handleHistory}
+            disabled={nextPageDisabled}
+          >
             Next Page
           </SCHistoryButton>
         </SCHistory>
       </SCOrderDiv>
-      <Error errors={errors} errorsBoolean={errorsBoolean}></Error>
       <Register data={registerOrder} orderBoolean={orderBoolean}></Register>
     </>
   );

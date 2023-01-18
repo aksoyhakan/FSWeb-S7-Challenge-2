@@ -15,18 +15,23 @@ gap:1rem;
 const SCFixSen = styled.div`
   font-size: 1.25rem;
   font-weight: bold;
-  margin: 3rem 0 1rem 0;
+  margin: 3rem 0 1rem 1rem;
+
+  @media (max-width: 813px) {
+    text-align: center;
+    margin-left: 0rem;
+  }
 `;
 
 const Main = (props) => {
   const { supplierData } = props;
-  console.log(supplierData);
+
   return (
     <div>
       <SCFixSen>Food delivery in Gotham City</SCFixSen>
       <SCMainDiv>
         {supplierData.map((item, index) => (
-          <Supplier key={index + 1} supplierInfo={item}></Supplier>
+          <Supplier key={index + 1} supplierInfo={item} />
         ))}
       </SCMainDiv>
     </div>

@@ -30,6 +30,7 @@ const SCDelivery = styled.p`
 const Supplier = (props) => {
   const { supplierInfo } = props;
   const { url } = useRouteMatch();
+
   return supplierInfo.name.includes("Pizza") ? (
     <Link
       style={{

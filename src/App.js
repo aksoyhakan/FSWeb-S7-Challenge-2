@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Switch,
-  Route,
-  Link,
-  useRouteMatch,
-  useParams,
-} from "react-router-dom";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import Navigation from "./Component/Navigation";
 import Main from "./Component/Main";
@@ -23,20 +17,19 @@ const SCContainer = styled.div`
 const App = () => {
   const [supplierData, setSupplierData] = useState(firstData);
   const { path } = useRouteMatch();
-  console.log("path :", path);
 
   return (
     <SCContainer>
-      <Navigation></Navigation>
+      <Navigation />
       <Switch>
         <Route exact path={`${path}`}>
-          <Main supplierData={supplierData}></Main>
+          <Main supplierData={supplierData} />
         </Route>
         <Route path={`${path}order`}>
-          <Order></Order>
+          <Order />
         </Route>
         <Route path={`${path}help`}>
-          <Help></Help>
+          <Help />
         </Route>
       </Switch>
     </SCContainer>

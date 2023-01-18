@@ -44,7 +44,7 @@ const firstData = [
     url:
       "https://www.logodesignlove.com/images/monograms/subway-monogram-01.jpg",
     name: "Subway",
-    detailInfo: ["Healthy", "Salad", "Take-away", "Sandwich"],
+    detailInfo: ["Healthy", "Salad", "Take Away", "Sandwich"],
     delivery: "45-50 Min",
     fee: "$2.49 Delivery Fee",
   },
