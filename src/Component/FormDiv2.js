@@ -93,7 +93,7 @@ const FormDiv2 = (props) => {
         errorsBoolean={errorsBoolean.sauce}
       ></Error>
       <SCLabel htmlFor="ingredients">
-        Add extra ingredients{" "}
+        Add extra ingredients (at least 4 and at most 10 ingredients){" "}
         <span style={{ fontWeight: "bold" }}>(Required)</span>
       </SCLabel>
       <SCIngredients>
@@ -114,7 +114,6 @@ const FormDiv2 = (props) => {
                       onClick={handleChange}
                     ></SCInput>
                     <label htmlFor={item}>{item}</label>
-                    <br />
                   </div>
                 )
             )}

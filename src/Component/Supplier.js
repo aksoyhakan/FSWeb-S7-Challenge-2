@@ -27,6 +27,13 @@ const SCDelivery = styled.p`
   }
 `;
 
+const SCImg = styled.img`
+  display: block;
+  width: 200px;
+  height: 200px;
+  margin: 0rem auto;
+`;
+
 const Supplier = (props) => {
   const { supplierInfo } = props;
   const { url } = useRouteMatch();
@@ -43,12 +50,7 @@ const Supplier = (props) => {
       to={`${url}order`}
     >
       <SCSupplierDiv data-cy={supplierInfo.name}>
-        <img
-          styled={{ display: "block" }}
-          src={supplierInfo.url}
-          width="200px"
-          height="200px"
-        ></img>
+        <SCImg src={supplierInfo.url}></SCImg>
 
         <p>{supplierInfo.name}</p>
         <p>
@@ -67,12 +69,7 @@ const Supplier = (props) => {
     </Link>
   ) : (
     <SCSupplierDiv data-cy={supplierInfo.name}>
-      <img
-        styled={{ display: "block" }}
-        src={supplierInfo.url}
-        width="200px"
-        height="200px"
-      ></img>
+      <SCImg src={supplierInfo.url}></SCImg>
 
       <p>{supplierInfo.name}</p>
       <p>

@@ -68,13 +68,11 @@ describe("Form Validation Test", () => {
       .should("be.disabled");
   });
 
-  it("Next and Previous Button Working Properly", () => {
+  it("Next and Previous (disabled as default in order and order/1 page) Button Working Properly", () => {
     cy.get('[data-cy="order-link"]')
       .click()
       .get('[data-cy="previous-page"]')
-      .click()
-      .get('[data-cy="previous-page"]')
-      .click()
+      .should("be.disabled")
       .url()
       .should("eq", "http://localhost:3000/order")
       .get('[data-cy="next-page"]')
@@ -82,7 +80,7 @@ describe("Form Validation Test", () => {
       .url()
       .should("eq", "http://localhost:3000/order/1")
       .get('[data-cy="previous-page"]')
-      .click()
+      .should("be.disabled")
       .url()
       .should("eq", "http://localhost:3000/order/1")
       .get('[data-cy="next-page"]')
@@ -98,12 +96,6 @@ describe("Form Validation Test", () => {
       .get('[data-cy="previous-page"]')
       .url()
       .should("eq", "http://localhost:3000/order/1")
-      .get('[data-cy="next-page"]')
-      .click()
-      .get('[data-cy="next-page"]')
-      .click()
-      .url()
-      .should("eq", "http://localhost:3000/order/3")
       .get('[data-cy="next-page"]')
       .click()
       .get('[data-cy="next-page"]')
@@ -202,7 +194,7 @@ describe("Form Validation Test", () => {
       .should("have.value", testQuantity);
   });
 
-  it("Error Message Working Properly Test and Check Previous Button Disabled During Error Message Occuring ", () => {
+  it("Error Message Working Properly Test and Check Next Button Disabled During Error Message Occuring ", () => {
     cy.get('[data-cy="order-link"]')
       .click()
       .get('[data-cy="next-page"]')

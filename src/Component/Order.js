@@ -297,13 +297,19 @@ const Order = (props) => {
           </Route>
         </Switch>
         <SCHistory>
-          <SCHistoryButton data-cy="previous-page" onClick={handleHistory}>
+          <SCHistoryButton
+            data-cy="previous-page"
+            disabled={
+              location.pathname === "/order" || location.pathname === "/order/1"
+            }
+            onClick={handleHistory}
+          >
             Previous Page
           </SCHistoryButton>
           <SCHistoryButton
             data-cy="next-page"
             onClick={handleHistory}
-            disabled={nextPageDisabled}
+            disabled={nextPageDisabled || location.pathname === "/order/3"}
           >
             Next Page
           </SCHistoryButton>
